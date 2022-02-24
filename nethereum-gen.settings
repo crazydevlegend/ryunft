@@ -1,0 +1,7 @@
+{
+    "projectName": "Polygod_contracts",
+    "namespace": "Polygod_contracts.Contracts",
+    "lang": 0,
+    "autoCodeGen": true,
+    "projectPath": "../"
+}
