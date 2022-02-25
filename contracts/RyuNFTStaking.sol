@@ -251,24 +251,6 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
         nft.safeTransferFrom(address(this), _msgSender(), tokenId);
     }
 
-    // function withdrawNfts(uint256[] calldata _tokenIds) external {
-    //     for (uint256 i = 0; i < _tokenIds.length; i++) {
-    //         uint256 tokenId = _tokenIds[i];
-    //         UnstakeCooldown memory cooldown = unstakeCooldowns[tokenId];
-
-    //         require(cooldown.present, "Token is not in cooldown");
-    //         require(_msgSender() == cooldown.owner, "You don't own this token");
-    //         require(
-    //             block.timestamp >=
-    //                 cooldown.startTimestamp + UNSTAKE_COOLDOWN_DURATION,
-    //             "Token is still in cooldown"
-    //         );
-
-    //         nft.safeTransferFrom(address(this), _msgSender(), tokenId);
-    //         _removeNftFromCooldown(tokenId);
-    //     }
-    // }
-
     /**
      * @dev Changes pause state.
      */
@@ -285,26 +267,6 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
             staked: true
         });
         _addStakeToOwnerEnumeration(_owner, _tokenId);
-    }
-
-    function _moveNftToCooldown(uint256 _tokenId) internal {
-        address owner = stakes[_tokenId].owner;
-        unstakeCooldowns[_tokenId] = UnstakeCooldown({
-            owner: stakes[_tokenId].owner,
-            tokenId: _tokenId,
-            startTimestamp: block.timestamp,
-            present: true
-        });
-
-        delete stakes[_tokenId];
-        _removeStakeFromOwnerEnumeration(owner, _tokenId);
-        _addCooldownToOwnerEnumeration(owner, _tokenId);
-    }
-
-    function _removeNftFromCooldown(uint256 _tokenId) internal {
-        address owner = unstakeCooldowns[_tokenId].owner;
-        delete unstakeCooldowns[_tokenId];
-        _removeCooldownFromOwnerEnumeration(owner, _tokenId);
     }
 
     /* Enumeration, adopted from OpenZeppelin ERC721Enumerable */
