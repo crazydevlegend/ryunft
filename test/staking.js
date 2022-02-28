@@ -100,7 +100,6 @@ describe("Staking", function () {
     it('Should stake all nfts', async () => {
         expect(await nftContract.balanceOf(deployer.address)).to.be.equal(3);
         expect(await stakingContract.getStakedNftsOfOwner(deployer.address)).to.have.lengthOf(0);
-
         await nftContract.setApprovalForAll(stakingContract.address, true);
         await stakingContract.stakeAll();
         expect(await nftContract.balanceOf(deployer.address)).to.be.equal(0);
@@ -112,6 +111,7 @@ describe("Staking", function () {
     // should unstake all nfts
     it('Should unstake all nfts', async () => {
         const originalBalance = await tokenContract.balanceOf(deployer.address);
+
         expect(await nftContract.balanceOf(deployer.address)).to.be.equal(0);
         expect(await stakingContract.getStakedNftsOfOwner(deployer.address)).to.have.lengthOf(3);
 
@@ -119,5 +119,6 @@ describe("Staking", function () {
         expect(await nftContract.balanceOf(deployer.address)).to.be.equal(3);
         expect(await stakingContract.getStakedNftsOfOwner(deployer.address)).to.have.lengthOf(0);
         expect(await tokenContract.balanceOf(deployer.address)).to.not.be.equal(originalBalance);
+
     })
 });

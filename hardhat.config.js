@@ -36,6 +36,18 @@ module.exports = {
     rinkeby: {
       url: 'https://eth-rinkeby.alchemyapi.io/v2/mEvGbbVlpRPPz7I9rUVb6BYGQchgfwau',
       accounts: [process.env.PK]
+    },
+    fuji: {
+      url: 'https://api.avax-test.network/ext/bc/C/rpc',
+      gasPrice: 225000000000,
+      chainId: 43113,
+      accounts: [process.env.PK]
+    },
+    avalanche: {
+      url: 'https://api.avax.network/ext/bc/C/rpc',
+      gasPrice: 225000000000,
+      chainId: 43114,
+      accounts: [process.env.PK]
     }
   },
   etherscan: {

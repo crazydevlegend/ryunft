@@ -16,6 +16,8 @@ interface INFT {
 
     function balanceOf(address owner) external view returns (uint256);
 
+    function tokenURI(uint256 _tokenId) external view returns (string memory);
+
     function safeTransferFrom(
         address _from,
         address _to,
@@ -52,6 +54,7 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
         uint256 tokenId;
         uint256 rewardPerday;
         uint256 accrual;
+        string tokenURI;
     }
 
     mapping(uint256 => StakeDetails) public stakes;
@@ -197,51 +200,6 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
         ryuToken.mint(devAddress, totalTaxed);
     }
 
-    // function batchClaim(uint256[] calldata _tokenIds) external {
-    //     uint256 totalClaimed = 0;
-    //     uint256 totalTaxed = 0;
-
-    //     for (uint256 i = 0; i < _tokenIds.length; i++) {
-    //         uint256 tokenId = _tokenIds[i];
-    //         uint256 tokens = _getTokensAccruedFor(tokenId, true); // also checks that msg.sender owns this token
-    //         uint256 taxAmount = (tokens * CLAIM_TOKEN_TAX_PERCENTAGE + 99) /
-    //             100; // +99 to round the division up
-
-    //         totalClaimed += tokens - taxAmount;
-    //         totalTaxed += taxAmount;
-    //         stakes[tokenId].startTimestamp = block.timestamp;
-    //     }
-
-    //     ryuToken.mint(_msgSender(), totalClaimed);
-    //     ryuToken.mint(devAddress, totalTaxed);
-    // }
-
-    // function claimTokensAndMaybeUnstake(
-    //     uint256[] calldata _tokenIds,
-    //     bool unstake
-    // ) external {
-    //     uint256 totalClaimed = 0;
-    //     uint256 totalTaxed = 0;
-
-    //     for (uint256 i = 0; i < _tokenIds.length; i++) {
-    //         uint256 tokenId = _tokenIds[i];
-    //         uint256 tokens = _getTokensAccruedFor(tokenId, true); // also checks that msg.sender owns this token
-    //         uint256 taxAmount = (tokens * CLAIM_TOKEN_TAX_PERCENTAGE + 99) /
-    //             100; // +99 to round the division up
-
-    //         totalClaimed += tokens - taxAmount;
-    //         totalTaxed += taxAmount;
-    //         stakes[tokenId].startTimestamp = block.timestamp;
-
-    //         if (unstake) {
-    //             _moveNftToCooldown(tokenId);
-    //         }
-    //     }
-
-    //     ryuToken.mint(_msgSender(), totalClaimed);
-    //     ryuToken.mint(devAddress, totalTaxed);
-    // }
-
     function unstake(uint256 tokenId) internal {
         StakeDetails memory stake = stakes[tokenId];
 
@@ -297,7 +255,8 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
                 outputs[cnt] = OwnedStakeInfo({
                     tokenId: i,
                     rewardPerday: getDayReward(i),
-                    accrual: 0
+                    accrual: 0,
+                    tokenURI: nft.tokenURI(i)
                 });
                 cnt++;
             }
@@ -332,7 +291,8 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
             outputs[i] = OwnedStakeInfo({
                 tokenId: tokenId,
                 rewardPerday: getDayReward(tokenId),
-                accrual: _getTokensAccruedFor(tokenId, false)
+                accrual: _getTokensAccruedFor(tokenId, false),
+                tokenURI: nft.tokenURI(tokenId)
             });
         }
 
