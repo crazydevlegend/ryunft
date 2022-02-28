@@ -20,7 +20,7 @@ describe("Staking", function () {
         await tokenContract.deployed();
 
         const stakingContractFactory = await ethers.getContractFactory("RyuNFTStaking");
-        stakingContract = await stakingContractFactory.deploy(nftContract.address, tokenContract.address, deployer.address);
+        stakingContract = await stakingContractFactory.deploy(nftContract.address, tokenContract.address);
         await stakingContract.deployed();
         expect(await stakingContract.nft()).to.be.equal(nftContract.address, "wrong nft address");
         expect(await stakingContract.ryuToken()).to.be.equal(tokenContract.address, "wrong token address");

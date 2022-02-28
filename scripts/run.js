@@ -11,7 +11,7 @@ const main = async () => {
     tokenContract = await tokenContractFactory.deploy();
 
     const stakingContractFactory = await ethers.getContractFactory("RyuNFTStaking");
-    stakingContract = await stakingContractFactory.deploy(nftContract.address, tokenContract.address, deployer.address);
+    stakingContract = await stakingContractFactory.deploy(nftContract.address, tokenContract.address);
 
     await nftContract.deployed();
 

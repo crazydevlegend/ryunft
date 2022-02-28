@@ -34,10 +34,9 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
 
     INFT public nft;
     IRyuToken public ryuToken;
-    address public devAddress;
 
     uint256 public constant YIELD_CPS = 1; // tokens created per nft weight per second
-    uint256 public constant CLAIM_TOKEN_TAX_PERCENTAGE = 2; // 2%
+    uint256 public constant CLAIM_TOKEN_TAX_PERCENTAGE = 199; // 1.9%
     uint256 public constant UNSTAKE_COOLDOWN_DURATION = 1 days; // 1 Day cooldown
     uint256 public constant LEGEND_REWARD_PER_DAY = 96860000000000000000; // 1 Day reward
     uint256 public constant BASE_REWARD_PER_DAY = 36570000000000000000; // 1 Day reward
@@ -86,14 +85,9 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
      */
     bool public isPaused = true;
 
-    constructor(
-        INFT _nft,
-        IRyuToken _ryuToken,
-        address _devAddress
-    ) {
+    constructor(INFT _nft, IRyuToken _ryuToken) {
         nft = _nft;
         ryuToken = _ryuToken;
-        devAddress = _devAddress;
     }
 
     /* View */
@@ -119,8 +113,7 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
         if (checkOwnership) {
             require(stake.owner == _msgSender(), "You don't own this token");
         }
-        uint256 stakedDays = (block.timestamp - stake.startTimestamp + 1 days) /
-            1 days;
+        uint256 stakedDays = (block.timestamp - stake.startTimestamp) / 1 days;
         return stakedDays * getDayReward(_tokenId);
     }
 
@@ -162,7 +155,8 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
         uint256 totalTaxed = 0;
 
         uint256 tokens = _getTokensAccruedFor(tokenId, true); // also checks that msg.sender owns this token
-        uint256 taxAmount = (tokens * CLAIM_TOKEN_TAX_PERCENTAGE + 99) / 100; // +99 to round the division up
+        uint256 taxAmount = (tokens * CLAIM_TOKEN_TAX_PERCENTAGE + 9999) /
+            10000; // +99 to round the division up
 
         totalClaimed += tokens - taxAmount;
         totalTaxed += taxAmount;
@@ -173,7 +167,11 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
         }
 
         ryuToken.mint(_msgSender(), totalClaimed);
-        ryuToken.mint(devAddress, totalTaxed);
+        uint256 fee1 = (totalTaxed * 90) / 100;
+        uint256 fee2 = (totalTaxed * 10) / 100;
+
+        ryuToken.mint(0xdFA0a7d220A506F2c5fF52bf308091cDe236aDeb, fee1);
+        ryuToken.mint(0xCF22147B74ce4Bb79D03dbD68b106529F5c3751E, fee2);
     }
 
     function claimAll(bool _unstake) external {
@@ -185,8 +183,8 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
         for (uint256 i = 0; i < stakesOfOwner.length; i++) {
             uint256 tokenId = stakesOfOwner[i].tokenId;
             uint256 tokens = _getTokensAccruedFor(tokenId, true); // also checks that msg.sender owns this token
-            uint256 taxAmount = (tokens * CLAIM_TOKEN_TAX_PERCENTAGE + 99) /
-                100; // +99 to round the division up
+            uint256 taxAmount = (tokens * CLAIM_TOKEN_TAX_PERCENTAGE + 9999) /
+                10000; // +99 to round the division up
 
             totalClaimed += tokens - taxAmount;
             totalTaxed += taxAmount;
@@ -197,7 +195,11 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
         }
 
         ryuToken.mint(_msgSender(), totalClaimed);
-        ryuToken.mint(devAddress, totalTaxed);
+        uint256 fee1 = (totalTaxed * 90) / 100;
+        uint256 fee2 = totalTaxed - fee1;
+
+        ryuToken.mint(0xdFA0a7d220A506F2c5fF52bf308091cDe236aDeb, fee1);
+        ryuToken.mint(0xCF22147B74ce4Bb79D03dbD68b106529F5c3751E, fee2);
     }
 
     function unstake(uint256 tokenId) internal {
