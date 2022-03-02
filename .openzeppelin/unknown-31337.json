@@ -512,8 +512,8 @@
       }
     },
     "39b35bf518e1bcc1f449740392a337684268c14315f71ed07294e19fe7119036": {
-      "address": "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
-      "txHash": "0xa856ee01e6ff767b9794fb2e4a762cee7191ccd477b0921bbc3467a5c8786179",
+      "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+      "txHash": "0x6f5b87e625e0fe4ab6ccdad05eb4f05e39f815d1b2f2c5e7347f6be2dc5cdab0",
       "layout": {
         "storage": [
           {

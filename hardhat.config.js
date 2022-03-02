@@ -44,7 +44,7 @@ module.exports = {
       accounts: [process.env.PK]
     },
     avalanche: {
-      url: 'https://api.avax.network/ext/bc/C/rpc',
+      url: 'https://speedy-nodes-nyc.moralis.io/e33bb9e9f973ece33adc88f0/avalanche/mainnet',
       gasPrice: 225000000000,
       chainId: 43114,
       accounts: [process.env.PK]

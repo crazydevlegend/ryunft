@@ -174,6 +174,17 @@ contract Ryu is
         }
     }
 
+    // //@dev this should be delted since this is just for test.
+    // function freeMint(uint256 n) public {
+    //     for (uint256 i = 0; i < n; i++) {
+    //         randomMint(_msgSender(), minted);
+    //         _setTokenRoyalty(minted, royaltyAddress, ROYALTY_VALUE);
+
+    //         minted += 1;
+    //         emit Claim(minted);
+    //     }
+    // }
+
     function claim(uint256 n) public payable {
         require(canClaim, "It's not possible to claim just yet.");
         require(n + minted <= MAX_MINTABLE, "Not enough left to mint.");

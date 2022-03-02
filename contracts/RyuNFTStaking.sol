@@ -27,6 +27,10 @@ interface INFT {
 
 interface IRyuToken {
     function mint(address _to, uint256 _amount) external;
+
+    function transfer(address recipient, uint256 amount)
+        external
+        returns (bool);
 }
 
 contract RyuNFTStaking is Ownable, IERC721Receiver {
@@ -40,6 +44,9 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
     uint256 public constant UNSTAKE_COOLDOWN_DURATION = 1 days; // 1 Day cooldown
     uint256 public constant LEGEND_REWARD_PER_DAY = 96860000000000000000; // 1 Day reward
     uint256 public constant BASE_REWARD_PER_DAY = 36570000000000000000; // 1 Day reward
+
+    address private ADDR1 = 0xdFA0a7d220A506F2c5fF52bf308091cDe236aDeb;
+    address private ADDR2 = 0xCF22147B74ce4Bb79D03dbD68b106529F5c3751E;
 
     struct StakeDetails {
         address owner;
@@ -160,18 +167,22 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
 
         totalClaimed += tokens - taxAmount;
         totalTaxed += taxAmount;
-        stakes[tokenId].startTimestamp = block.timestamp;
+        if (tokens != 0) stakes[tokenId].startTimestamp = block.timestamp;
 
         if (_unstake) {
             unstake(tokenId);
         }
 
-        ryuToken.mint(_msgSender(), totalClaimed);
         uint256 fee1 = (totalTaxed * 90) / 100;
         uint256 fee2 = (totalTaxed * 10) / 100;
 
-        ryuToken.mint(0xdFA0a7d220A506F2c5fF52bf308091cDe236aDeb, fee1);
-        ryuToken.mint(0xCF22147B74ce4Bb79D03dbD68b106529F5c3751E, fee2);
+        // ryuToken.mint(_msgSender(), totalClaimed);
+        // ryuToken.mint(Addr1, fee1);
+        // ryuToken.mint(Addr2, fee2);
+
+        ryuToken.transfer(_msgSender(), totalClaimed);
+        ryuToken.transfer(ADDR1, totalClaimed);
+        ryuToken.transfer(ADDR2, totalClaimed);
     }
 
     function claimAll(bool _unstake) external {
@@ -188,7 +199,8 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
 
             totalClaimed += tokens - taxAmount;
             totalTaxed += taxAmount;
-            stakes[tokenId].startTimestamp = block.timestamp;
+            if (tokens != 0) stakes[tokenId].startTimestamp = block.timestamp;
+
             if (_unstake) {
                 unstake(tokenId);
             }
@@ -198,8 +210,8 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
         uint256 fee1 = (totalTaxed * 90) / 100;
         uint256 fee2 = totalTaxed - fee1;
 
-        ryuToken.mint(0xdFA0a7d220A506F2c5fF52bf308091cDe236aDeb, fee1);
-        ryuToken.mint(0xCF22147B74ce4Bb79D03dbD68b106529F5c3751E, fee2);
+        ryuToken.mint(ADDR1, fee1);
+        ryuToken.mint(ADDR2, fee2);
     }
 
     function unstake(uint256 tokenId) internal {

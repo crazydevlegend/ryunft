@@ -9,7 +9,7 @@ contract RyuToken is ERC20("Ryu", "Ryu"), Ownable {
     uint256 public maxSupply = 10000000 ether;
 
     constructor() {
-        // _mint(msg.sender, 3250000 ether);
+        _mint(msg.sender, 3250000 ether);
     }
 
     function setStakingAddress(address _stakingAddress) external onlyOwner {

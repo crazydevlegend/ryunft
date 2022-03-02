@@ -1,76 +1,53 @@
-const axios = require("axios");
-const base64json = require('base64json');
 const { upgrades, ethers } = require('hardhat');
-const fs = require('fs');
-const dotenv = require('dotenv')
-dotenv.config();
-const readAbi = (contract) => {
-    let rawdata = fs.readFileSync(`./artifacts/contracts/${contract}.sol/${contract}.json`)
-    let abi = JSON.parse(rawdata)
-    return abi.abi;
-}
 
-const NFT_ADDRESS = "0xAdaA1Edf584B35aBeaCA06eA69A415D2Fa82F66e";
-const TOKEN_ADDRESS = "0xa8fb68893Bbf0730c54fA67f7c3911E1bc32cA8B";
-const STAKING_ADDRESS = "0x13250A43E09C868c63c94144Ab14c385b6f8c23c";
-
-const NFT_ABI = readAbi("Ryu_V2")
-const TOKEN_ABI = readAbi("RyuToken")
-const STAKING_ABI = readAbi("RyuNFTStaking")
-
-
-const infuraProvider = new ethers.providers.InfuraProvider("rinkeby", "https://rinkeby.infura.io/v3/c6e0872a300648ec9f7d1e54791d1050")
-const signer = ethers.getSigner();
-// console.log(await signer.getBalance())
-
-const provider = new ethers.providers.JsonRpcProvider("https://rinkeby-light.eth.linkpool.io/")
-const wallet = new ethers.Wallet(process.env.PK, provider);
-
-const nftContract = new ethers.Contract(NFT_ADDRESS, NFT_ABI, wallet)
-const tokenContract = new ethers.Contract(TOKEN_ADDRESS, TOKEN_ABI, wallet)
-const stakingContract = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, wallet)
 
 
 const main = async () => {
-    await stakingContract.flipPauseStatus();
-    return;
-    let tx = await nftContract.toggleEarlyClaimability()
-    await tx.wait();
-    tx = await nftContract.earlyMint(3, {
-        value: ethers.utils.parseEther('0.05')
-    })
-    await tx.wait();
-    console.log(await nftContract.balanceOf(wallet.getAddress()))
+    let nftContract, tokenContract, stakingContract;
+    let deployer, otherAccnt;
+
+    [deployer] = await ethers.getSigners()
+
+    // const nftContractFactory = await hre.ethers.getContractFactory('Ryu');
+    // nftContract = await upgrades.deployProxy(nftContractFactory, [deployer.address, deployer.address], { kind: 'uups', initializer: 'initialize' })
+
+    // const tokenContractFactory = await ethers.getContractFactory("RyuToken");
+    // tokenContract = await tokenContractFactory.deploy();
+
+    const nft2ContractFactory = await hre.ethers.getContractFactory("Ryu_V2");
+    nftContract = await upgrades.upgradeProxy("0x2ca0507d72e3d30badea3d3b558103d192026251", nft2ContractFactory, {});
+    // await nftContract.deployed();
+    // console.log(`nftContract: ${nftContract.address}`)
+
+
+    // const stakingContractFactory = await ethers.getContractFactory("RyuNFTStaking");
+    // stakingContract = await stakingContractFactory.deploy(nftContract.address, tokenContract.address);
+
+    // await nftContract.deployed();
+
+    // await tokenContract.deployed();
+    // console.log(`tokenContract: ${tokenContract.address}`)
+
+    // await stakingContract.deployed();
+    // console.log(`stakingContract: ${stakingContract.address}`)
+
+
+    // let tx = await tokenContract.setStakingAddress(stakingContract.address);
+    // await tx.wait();
+
+    // tx = await stakingContract.flipPauseStatus();
+    // await tx.wait();
+
+    // tx = await nftContract.freeMint(100);
+    // await tx.wait();
+
+    // const nft2ContractFactory = await hre.ethers.getContractFactory("Ryu_V2");
+    // nftContract = await upgrades.upgradeProxy(nftContract.address, nft2ContractFactory, {});
+    // console.log(`nft Contract: ${nftContract.address}\ntokenContract: ${tokenContract.address}\nstakingContract: ${stakingContract.address}`)
+
 };
 
-const stake = async (tokenId) => {
-    let tx = await nftContract.approve(stakingContract.address, tokenId);
-    await tx.wait();
-    tx = await stakingContract.stake(tokenId);
-    await tx.wait();
-}
-const unstake = async (tokenId) => {
 
-}
-
-const claim = async (tokenId) => {
-
-}
-
-const stakeAll = async () => {
-    let tx = await nftContract.approveForAll(stakingContract.address);
-    await tx.wait();
-    tx = await stakingContract.stake();
-    await tx.wait();
-}
-
-const unstakeAll = async () => {
-
-}
-
-const claimAll = async () => {
-
-}
 
 const runMain = async () => {
     try {
