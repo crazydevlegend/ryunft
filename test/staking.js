@@ -26,7 +26,11 @@ describe("Staking", function () {
         expect(await stakingContract.ryuToken()).to.be.equal(tokenContract.address, "wrong token address");
         await tokenContract.setStakingAddress(stakingContract.address);
     });
-
+    it("Should withdraw ryu from staking contract", async () => {
+        console.log(await tokenContract.balanceOf(stakingContract.address));
+        await stakingContract.withdrawRyu();
+        expect(await tokenContract.balanceOf(stakingContract.address)).to.be.equal(0)
+    })
     // Should transfer tokens to staking contract
     it("Should transfer token to staking contract", async () => {
         await tokenContract.transfer(stakingContract.address, 10000);

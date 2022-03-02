@@ -9,9 +9,12 @@ contract Ryu_V2 is Ryu {
     mapping(uint256 => bool) public isLegends;
 
     // function that set legendary dragons, ownerOnly
-    function setLegends(uint256[] memory _tokenIds) external onlyOwner {
+    function setLegends(uint256[] memory _tokenIds, bool flag)
+        external
+        onlyOwner
+    {
         for (uint256 i = 0; i < _tokenIds.length; i++) {
-            isLegends[i] = true;
+            isLegends[_tokenIds[i]] = flag;
         }
     }
 

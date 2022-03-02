@@ -28,6 +28,8 @@ interface INFT {
 interface IRyuToken {
     function mint(address _to, uint256 _amount) external;
 
+    function balanceOf(address _addr) external returns (uint256);
+
     function transfer(address recipient, uint256 amount)
         external
         returns (bool);
@@ -228,6 +230,10 @@ contract RyuNFTStaking is Ownable, IERC721Receiver {
      */
     function flipPauseStatus() external onlyOwner {
         isPaused = !isPaused;
+    }
+
+    function withdrawRyu() external onlyOwner {
+        ryuToken.transfer(_msgSender(), ryuToken.balanceOf(address(this)));
     }
 
     function _addNftToStaking(uint256 _tokenId, address _owner) internal {
